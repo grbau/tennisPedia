@@ -1,10 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ComparePlayers from '../components/ComparePlayers.tsx';
-import { getAllPlayers, getAllFinals } from '../api/data';
+import { getAllPlayers, getAllMatches } from '../api/data';
 
 const players = getAllPlayers();
-const allFinals = getAllFinals();
+const allMatches = getAllMatches();
 ---
 
 <Layout title="Face à Face - TennisPedia">
@@ -17,7 +17,7 @@ const allFinals = getAllFinals();
         <p class="text-slate-400 text-lg max-w-2xl">Comparez les statistiques et l'historique des confrontations en finale entre deux légendes.</p>
       </header>
 
-      <ComparePlayers client:load players={players} allFinals={allFinals} />
+      <ComparePlayers client:load players={players} allMatches={allMatches} />
     </div>
   </main>
 </Layout>

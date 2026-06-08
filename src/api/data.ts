@@ -2,6 +2,8 @@ import atpPlayers from './ATP_players.json';
 import wtaPlayers from './WTA_players.json';
 import atpFinals from './ATP_finals.json';
 import wtaFinals from './WTA_finals.json';
+import atpMatches from './ATP_matches.json';
+import wtaMatches from './WTA_matches.json';
 
 export interface Player {
   id: string;
@@ -41,6 +43,11 @@ export const getAllPlayers = (): Player[] => {
 export const getAllFinals = () => {
   const allFinals = [...(atpFinals as any[]), ...(wtaFinals as any[])];
   return allFinals.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+};
+
+export const getAllMatches = () => {
+  const allMatches = [...(atpMatches as any[]), ...(wtaMatches as any[])];
+  return allMatches.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 };
 
 export const getLatestFinals = (limit = 6) => {

@@ -47,10 +47,11 @@ def load_players(repo_dir, tour):
     return players
 
 
-def extract_finals(repo_dir, tour):
-    """Parcourt tous les fichiers de matchs annuels et renvoie la liste des finales
-    des grands tournois."""
+def extract_matches_and_finals(repo_dir, tour):
+    """Parcourt tous les fichiers de matchs annuels et renvoie la liste de tous les matches
+    ainsi que les finales seules pour les tournois majeurs."""
     finals = []
+    all_matches = []
     seen_players = set()
     pattern = os.path.join(repo_dir, f"{tour}_matches_[0-9]" + "[0-9]" * 3 + ".csv")
     for path in sorted(glob.glob(pattern)):
@@ -61,26 +62,31 @@ def extract_finals(repo_dir, tour):
                     seen_players.add(m.get("winner_id"))
                     seen_players.add(m.get("loser_id"))
 
-                if m.get("tourney_level") in LEVELS and m.get("round") == "F":
                     d = m.get("tourney_date", "")
-                    finals.append({
+                    match_data = {
                         "year": int(d[:4]) if d[:4].isdigit() else None,
                         "date": (f"{d[:4]}-{d[4:6]}-{d[6:8]}" if len(d) == 8 else None),
                         "tournament": m.get("tourney_name", ""),
                         "level": LEVELS[m["tourney_level"]],
                         "surface": m.get("surface", ""),
+                        "round": m.get("round", ""),
                         "winner_id": m.get("winner_id", ""),
                         "winner_name": m.get("winner_name", ""),
-                        "runner_up_id": m.get("loser_id", ""),
-                        "runner_up_name": m.get("loser_name", ""),
+                        "loser_id": m.get("loser_id", ""),
+                        "loser_name": m.get("loser_name", ""),
+                        "runner_up_id": m.get("loser_id", ""), # Alias pour compatibilité
+                        "runner_up_name": m.get("loser_name", ""), # Alias pour compatibilité
                         "score": m.get("score", ""),
-                    })
-    return finals, seen_players
+                    }
+                    all_matches.append(match_data)
+                    if m.get("round") == "F":
+                        finals.append(match_data)
+    return all_matches, finals, seen_players
 
 
 def main(repo_dir, tour):
     players = load_players(repo_dir, tour)
-    finals, seen_players = extract_finals(repo_dir, tour)
+    all_matches, finals, seen_players = extract_matches_and_finals(repo_dir, tour)
 
     # Rattache chaque titre à la fiche du vainqueur
     for fin in finals:
@@ -109,8 +115,18 @@ def main(repo_dir, tour):
     out_dir = Path(__file__).parent / "src" / "api"
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    # Initialisation sécurisée pour éviter les erreurs d'import dans Astro
+    for f_name in [f"{out_prefix}_finals.json", f"{out_prefix}_matches.json", f"{out_prefix}_players.json"]:
+        target = out_dir / f_name
+        if not target.exists():
+            with open(target, "w", encoding="utf-8") as f:
+                json.dump([], f)
+
     with open(out_dir / f"{out_prefix}_finals.json", "w", encoding="utf-8") as f:
         json.dump(finals, f, ensure_ascii=False, indent=2)
+
+    with open(out_dir / f"{out_prefix}_matches.json", "w", encoding="utf-8") as f:
+        json.dump(all_matches, f, ensure_ascii=False, indent=2)
 
     # Tri intelligent : d'abord les Grands Chelems, puis le total des titres, puis le nom
     sorted_players = sorted(

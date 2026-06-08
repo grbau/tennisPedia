@@ -29,7 +29,7 @@ const Selector = ({ search, setSearch, filtered, setPlayerId, label }: any) => (
   </div>
 );
 
-export default function ComparePlayers({ players, allFinals }: { players: Player[], allFinals: any[] }) {
+export default function ComparePlayers({ players, allMatches }: { players: Player[], allMatches: any[] }) {
   const [p1Id, setP1Id] = useState<string | null>(null);
   const [p2Id, setP2Id] = useState<string | null>(null);
   const [search1, setSearch1] = useState('');
@@ -76,9 +76,9 @@ export default function ComparePlayers({ players, allFinals }: { players: Player
 
   const h2h = useMemo(() => {
     if (!p1Id || !p2Id) return null;
-    const matches = allFinals.filter(f => 
-      (f.winner_id === p1Id && f.runner_up_id === p2Id) ||
-      (f.winner_id === p2Id && f.runner_up_id === p1Id)
+    const matches = allMatches.filter(f => 
+      (f.winner_id === p1Id && f.loser_id === p2Id) ||
+      (f.winner_id === p2Id && f.loser_id === p1Id)
     );
     return {
       total: matches.length,
@@ -86,7 +86,7 @@ export default function ComparePlayers({ players, allFinals }: { players: Player
       p2Wins: matches.filter(m => m.winner_id === p2Id).length,
       matches
     };
-  }, [p1Id, p2Id, allFinals]);
+  }, [p1Id, p2Id, allMatches]);
 
   return (
     <div className="space-y-12">
@@ -105,7 +105,7 @@ export default function ComparePlayers({ players, allFinals }: { players: Player
               </div>
               <h2 className="text-3xl font-black uppercase italic tracking-tighter">{p1.full_name}</h2>
               <div className="text-5xl font-black text-emerald-500">{h2h?.p1Wins}</div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Victoires en Finale</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Victoires H2H</p>
             </div>
 
             <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 text-center backdrop-blur-sm self-stretch flex flex-col justify-center">
@@ -133,20 +133,20 @@ export default function ComparePlayers({ players, allFinals }: { players: Player
               </div>
               <h2 className="text-3xl font-black uppercase italic tracking-tighter">{p2.full_name}</h2>
               <div className="text-5xl font-black text-emerald-500">{h2h?.p2Wins}</div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Victoires en Finale</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Victoires H2H</p>
             </div>
           </div>
 
           {h2h && h2h.matches.length > 0 && (
             <div className="space-y-6">
-              <h3 className="text-2xl font-black italic uppercase tracking-tighter border-l-4 border-emerald-500 pl-4">Historique des Finales</h3>
+              <h3 className="text-2xl font-black italic uppercase tracking-tighter border-l-4 border-emerald-500 pl-4">Historique des Confrontations</h3>
               <div className="grid gap-4">
                 {h2h.matches.map((m: any, i: number) => (
                   <div key={i} className="group flex flex-col sm:flex-row justify-between items-center bg-white/5 border border-white/5 rounded-3xl p-6 hover:bg-white/[0.08] transition-all">
                     <div className="flex items-center gap-6 mb-4 sm:mb-0">
                       <span className="text-xl font-black text-slate-700 italic">{m.year}</span>
                       <div>
-                        <p className="font-bold text-slate-200 uppercase tracking-tight italic">{m.tournament}</p>
+                        <p className="font-bold text-slate-200 uppercase tracking-tight italic">{m.tournament} <span className="ml-2 text-emerald-500/50 text-xs">[{m.round}]</span></p>
                         <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{m.surface} • {m.level}</p>
                       </div>
                     </div>
