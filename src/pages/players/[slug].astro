@@ -1,0 +1,79 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PlayerImage from '../../components/PlayerImage.tsx'; // Assurez-vous de créer ce fichier
+import PlayerTitles from '../../components/PlayerTitles.tsx';
+import { getAllPlayers } from '../../api/data';
+
+export async function getStaticPaths() {
+  const players = getAllPlayers();
+  return players.map((p) => ({
+    params: { slug: p.slug },
+    props: { player: p },
+  }));
+}
+
+const { player } = Astro.props;
+
+// Calcul de l'âge dynamique
+const calculateAge = (dateString: string | null) => {
+  if (!dateString) return null;
+  const today = new Date();
+  const birthDate = new Date(dateString);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+  return age;
+};
+
+const age = calculateAge(player.birth_date);
+---
+
+<Layout title={`${player.full_name} - TennisPedia`}>
+  <main class="min-h-screen py-12 px-4 md:px-6 bg-slate-950 text-slate-100">
+    <div class="max-w-5xl mx-auto">
+      <a href="/" class="group flex items-center gap-2 text-slate-400 hover:text-emerald-400 transition-colors mb-12 font-black uppercase text-[10px] tracking-[0.2em]">
+        <span class="transition-transform group-hover:-translate-x-1">←</span> Retour au Dashboard
+      </a>
+      
+      <div class="flex flex-col lg:flex-row gap-12 items-center lg:items-start mb-20 text-center lg:text-left">
+        <div class="relative z-10">
+          <PlayerImage client:load wikidataId={player.wikidata_id} playerName={player.full_name} />
+          <div class="absolute -bottom-2 -right-2 bg-slate-900 border border-white/10 px-3 py-1 rounded-full text-[10px] font-bold text-slate-400 shadow-xl">
+            ID: {player.id}
+          </div>
+        </div>
+        
+        <div class="flex-1">
+          <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 mb-6">
+             <span class="px-4 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-widest text-emerald-400">
+               {player.country}
+             </span>
+             <span class="text-slate-500 text-xs font-bold uppercase tracking-tighter">
+               {player.hand === 'R' ? 'Droitier' : player.hand === 'L' ? 'Gaucher' : 'Inconnu'}
+             </span>
+             {age && <span class="text-slate-500 text-xs font-bold uppercase border-l border-white/10 pl-4">{age} ans</span>}
+             {player.height_cm && <span class="text-slate-500 text-xs font-bold uppercase border-l border-white/10 pl-4">{player.height_cm} cm</span>}
+          </div>
+          
+          <h1 class="text-6xl md:text-8xl font-black mb-10 tracking-tighter uppercase italic leading-none bg-gradient-to-r from-white to-slate-500 bg-clip-text text-transparent">
+            {player.full_name}
+          </h1>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="bg-white/5 backdrop-blur-md p-5 rounded-2xl border border-white/5">
+              <span class="block text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] mb-1">Titres Totaux</span>
+              <span class="text-3xl font-black text-emerald-400 tracking-tighter">{player.total_titles}</span>
+            </div>
+            <div class="bg-white/5 backdrop-blur-md p-5 rounded-2xl border border-white/5">
+              <span class="block text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] mb-1">Grands Chelems</span>
+              <span class="text-3xl font-black text-amber-500 tracking-tighter">{player.grand_slams}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PlayerTitles client:load titles={player.titles} />
+
+    </div>
+  </main>
+</Layout>

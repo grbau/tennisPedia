@@ -1,0 +1,20 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TournamentFilter from '../../components/TournamentFilter.tsx';
+import { getAllFinals } from '../../api/data';
+
+const allFinals = getAllFinals();
+---
+
+<Layout title="Historique des Tournois - TennisPedia">
+	<main class="min-h-screen py-20 px-6">
+		<div class="max-w-6xl mx-auto">
+			<header class="mb-16 text-center md:text-left">
+				<h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter italic uppercase leading-none">Historique des <span class="text-emerald-500">Finales</span></h1>
+				<p class="text-slate-400 text-lg max-w-2xl">Retrouvez tous les dénouements des tournois majeurs du circuit mondial. Utilisez les filtres ci-dessous pour affiner votre recherche.</p>
+			</header>
+
+			<TournamentFilter client:load finals={allFinals} />
+		</div>
+	</main>
+</Layout>

@@ -1,0 +1,58 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getLatestFinals, getStats } from '../api/data';
+
+const stats = getStats();
+const latestFinals = getLatestFinals(6);
+---
+
+<Layout title="Dashboard - TennisPedia">
+	<main class="min-h-screen py-12 px-6">
+		<div class="max-w-7xl mx-auto">
+			<!-- Stats Grid -->
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+				<div class="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-xl">
+					<p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Joueurs Archivés</p>
+					<p class="text-6xl font-black text-emerald-500 tracking-tighter">{stats.totalPlayers}</p>
+				</div>
+				<div class="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-xl">
+					<p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Grands Chelems Répertoriés</p>
+					<p class="text-6xl font-black text-blue-500 tracking-tighter">{stats.totalGrandSlams}</p>
+				</div>
+			</div>
+
+			<div class="flex justify-between items-end mb-10">
+				<div>
+					<h2 class="text-4xl font-black italic uppercase tracking-tighter">Dernières <span class="text-emerald-500">Finales</span></h2>
+					<p class="text-slate-500 text-sm mt-2">Les dénouements les plus récents du circuit.</p>
+				</div>
+				<a href="/tournaments" class="text-[10px] font-black uppercase tracking-widest text-emerald-500 hover:text-white transition-colors">
+					Voir tout →
+				</a>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+				{latestFinals.map((f: any) => (
+					<div class="bg-white/5 border border-white/5 rounded-[2rem] p-6 hover:bg-white/[0.08] transition-all">
+						<div class="flex justify-between items-start mb-6">
+							<span class="text-[10px] font-bold text-slate-500">{f.year}</span>
+							<span class="text-[9px] font-black px-2 py-0.5 rounded-full border border-white/10 uppercase">{f.level}</span>
+						</div>
+						<h3 class="font-bold text-xl group-hover:text-emerald-400 transition-colors leading-tight tracking-tight italic uppercase">
+							{f.tournament}
+						</h3>
+						<div class="space-y-2">
+							<div class="bg-slate-950/50 p-3 rounded-xl border border-white/5 flex justify-between items-center">
+								<span class="text-xs font-bold text-emerald-400">🏆 {f.winner_name}</span>
+							</div>
+							<div class="px-3 flex justify-between items-center">
+								<span class="text-[10px] text-slate-500 italic">🥈 {f.runner_up_name}</span>
+								<span class="text-[10px] font-mono text-slate-600">{f.score}</span>
+							</div>
+						</div>
+					</div>
+				))}
+			</div>
+		</div>
+	</main>
+</Layout>

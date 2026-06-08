@@ -1,0 +1,40 @@
+name: Update Tennis Data
+
+on:
+  schedule:
+    - cron: '0 4 * * 1' # Tous les lundis à 4h du matin
+  workflow_dispatch: # Permet de lancer la mise à jour manuellement
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Clone Jeff Sackmann Data
+        run: |
+          git clone --depth 1 https://github.com/JeffSackmann/tennis_atp.git
+          git clone --depth 1 https://github.com/JeffSackmann/tennis_wta.git
+
+      - name: Run Extraction Script
+        run: python extract_tennis.py
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name 'TennisPedia Bot'
+          git config --global user.email 'bot@tennispedia.com'
+          git add src/api/*.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update tennis data from source"
+            git push
+          fi
+
+      - name: Clean up
+        run: rm -rf tennis_atp tennis_wta

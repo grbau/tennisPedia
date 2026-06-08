@@ -1,0 +1,20 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PlayerSearch from '../../components/PlayerSearch.tsx';
+import { getAllPlayers } from '../../api/data';
+
+const allPlayers = getAllPlayers();
+---
+
+<Layout title="Tous les Joueurs - TennisPedia">
+	<main class="min-h-screen py-20 px-6">
+		<div class="max-w-6xl mx-auto">
+			<header class="mb-16">
+				<h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter italic uppercase leading-none">L'archive des <span class="text-emerald-500">Légendes</span></h1>
+				<p class="text-slate-400 text-lg max-w-2xl">Explorez la base de données complète des joueurs ATP et WTA, triée par palmarès et records en Grand Chelem.</p>
+			</header>
+
+			<PlayerSearch client:load players={allPlayers} />
+		</div>
+	</main>
+</Layout>

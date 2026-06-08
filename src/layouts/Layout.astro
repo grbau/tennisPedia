@@ -1,0 +1,94 @@
+---
+interface Props {
+	title?: string;
+}
+
+const { title = "TennisPedia" } = Astro.props;
+import '../styles/global.css';
+
+const { pathname } = Astro.url;
+const isHome = pathname === '/';
+const isTournaments = pathname.startsWith('/tournaments');
+const isPlayers = pathname.startsWith('/players');
+const isCompare = pathname.startsWith('/compare');
+---
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body class="bg-slate-950 text-slate-100 selection:bg-emerald-500/30 antialiased">
+		<!-- Navigation -->
+		<nav class="sticky top-0 z-50 border-b border-white/5 bg-slate-950/80 backdrop-blur-md">
+			<div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+				<a href="/" class="group flex items-center gap-2 text-2xl font-black uppercase italic tracking-tighter">
+					Tennis<span class="text-emerald-500 transition-colors group-hover:text-emerald-400">Pedia</span>
+				</a>
+				<div class="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-widest text-slate-400">
+					<a href="/" class={`transition-colors hover:text-emerald-400 ${isHome ? 'text-emerald-400' : ''}`}>Accueil</a>
+					<a href="/tournaments" class={`transition-colors hover:text-emerald-400 ${isTournaments ? 'text-emerald-400' : ''}`}>Tournois</a>
+					<a href="/compare" class={`transition-colors hover:text-emerald-400 ${isCompare ? 'text-emerald-400' : ''}`}>Face à Face</a>
+					<a href="/players" class={`transition-colors hover:text-emerald-400 ${isPlayers ? 'text-emerald-400' : ''}`}>Joueurs</a>
+				</div>
+
+				<!-- Bouton Burger Mobile -->
+				<button id="menu-toggle" class="md:hidden text-slate-400 hover:text-emerald-400 transition-colors p-2" aria-label="Menu">
+					<svg id="icon-open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+					</svg>
+					<svg id="icon-close" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+					</svg>
+				</button>
+			</div>
+
+			<!-- Menu Mobile -->
+			<div id="mobile-menu" class="hidden md:hidden border-t border-white/5 bg-slate-950/95 backdrop-blur-xl px-6 py-8 space-y-6">
+				<a href="/" class={`block text-lg font-black uppercase italic tracking-wider hover:text-emerald-400 transition-colors ${isHome ? 'text-emerald-400' : 'text-slate-400'}`}>Accueil</a>
+				<a href="/tournaments" class={`block text-lg font-black uppercase italic tracking-wider hover:text-emerald-400 transition-colors ${isTournaments ? 'text-emerald-400' : 'text-slate-400'}`}>Tournois</a>
+				<a href="/compare" class={`block text-lg font-black uppercase italic tracking-wider hover:text-emerald-400 transition-colors ${isCompare ? 'text-emerald-400' : 'text-slate-400'}`}>Face à Face</a>
+				<a href="/players" class={`block text-lg font-black uppercase italic tracking-wider hover:text-emerald-400 transition-colors ${isPlayers ? 'text-emerald-400' : 'text-slate-400'}`}>Joueurs</a>
+			</div>
+		</nav>
+
+		<div class="relative isolate">
+			<!-- Arrière-plan décoratif (Spotlight) -->
+			<div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+				<div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-emerald-500 to-blue-600 opacity-10 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
+			</div>
+			
+			<slot />
+
+			<footer class="border-t border-white/5 py-12 mt-20">
+				<div class="mx-auto max-w-7xl px-6 text-center">
+					<p class="text-[10px] uppercase tracking-[0.3em] text-slate-600 font-bold">TennisPedia — Archive du Tennis Mondial</p>
+				</div>
+			</footer>
+		</div>
+
+		<script>
+			const btn = document.getElementById('menu-toggle');
+			const menu = document.getElementById('mobile-menu');
+			const iconOpen = document.getElementById('icon-open');
+			const iconClose = document.getElementById('icon-close');
+
+			btn?.addEventListener('click', () => {
+				const isHidden = menu?.classList.toggle('hidden');
+				
+				// Bloque ou restaure le scroll du body
+				if (!isHidden) {
+					document.body.classList.add('overflow-hidden');
+				} else {
+					document.body.classList.remove('overflow-hidden');
+				}
+
+				iconOpen?.classList.toggle('hidden');
+				iconClose?.classList.toggle('hidden');
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ComparePlayers from '../components/ComparePlayers.tsx';
+import { getAllPlayers, getAllFinals } from '../api/data';
+
+const players = getAllPlayers();
+const allFinals = getAllFinals();
+---
+
+<Layout title="Face à Face - TennisPedia">
+  <main class="min-h-screen py-12 px-6">
+    <div class="max-w-7xl mx-auto">
+      <header class="mb-16">
+        <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter italic uppercase leading-none">
+          Face à <span class="text-emerald-500">Face</span>
+        </h1>
+        <p class="text-slate-400 text-lg max-w-2xl">Comparez les statistiques et l'historique des confrontations en finale entre deux légendes.</p>
+      </header>
+
+      <ComparePlayers client:load players={players} allFinals={allFinals} />
+    </div>
+  </main>
+</Layout>
