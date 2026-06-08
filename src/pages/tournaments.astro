@@ -1,0 +1,22 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TournamentFilter from '../components/TournamentFilter.tsx';
+import { getAllFinals } from '../api/data';
+
+const finals = getAllFinals();
+---
+
+<Layout title="Tous les Tournois">
+  <main class="min-h-screen py-12 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-16">
+        <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter italic uppercase leading-none">
+          Archives des <span class="text-emerald-500">Tournois</span>
+        </h1>
+        <p class="text-slate-400 text-lg max-w-2xl">Explorez l'histoire du tennis mondial à travers ses plus grandes finales (ATP & WTA).</p>
+      </div>
+
+      <TournamentFilter client:load finals={finals} />
+    </div>
+  </main>
+</Layout>

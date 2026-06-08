@@ -19,6 +19,18 @@ const isCompare = pathname.startsWith('/compare');
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="manifest" href="/manifest.json" />
+		<script>
+		// Enregistrement du Service Worker
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', () => {
+			navigator.serviceWorker.register('/service-worker.js')
+				.then(registration => {
+				console.log('ServiceWorker registered: ', registration);
+				})
+				.catch(error => console.error('ServiceWorker registration failed: ', error));
+			});
+		}
+		</script>
 		<meta name="generator" content={Astro.generator} />
 		
 		<!-- Meta tags pour PWA/Mobile -->
