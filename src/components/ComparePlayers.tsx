@@ -1,25 +1,78 @@
-import { useState, useMemo } from 'preact/hooks';
+import { useState, useMemo, useEffect } from 'preact/hooks';
 import type { Player } from '../api/data';
 import PlayerImage from './PlayerImage';
+
+// On sort le composant Selector ici pour qu'il soit stable et ne provoque pas de perte de focus
+const Selector = ({ search, setSearch, filtered, setPlayerId, label }: any) => (
+  <div className="relative group">
+    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3">{label}</p>
+    <input
+      type="text"
+      value={search}
+      onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
+      placeholder="Chercher un joueur..."
+      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:ring-2 focus:ring-emerald-500/50 outline-none transition-all placeholder:text-slate-700 font-bold uppercase italic text-sm"
+    />
+    {filtered.length > 0 && (
+      <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-white/10 rounded-2xl overflow-hidden z-50 shadow-2xl">
+        {filtered.map((p: Player) => (
+          <button
+            key={p.id}
+            onClick={() => { setPlayerId(p.id); setSearch(p.full_name); }}
+            className="w-full px-6 py-4 text-left hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors border-b border-white/5 last:border-0 text-sm font-bold uppercase italic"
+          >
+            {p.full_name} <span className="text-[10px] text-slate-500 ml-2">({p.country})</span>
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
+);
 
 export default function ComparePlayers({ players, allFinals }: { players: Player[], allFinals: any[] }) {
   const [p1Id, setP1Id] = useState<string | null>(null);
   const [p2Id, setP2Id] = useState<string | null>(null);
   const [search1, setSearch1] = useState('');
   const [search2, setSearch2] = useState('');
+  
+  // États pour les termes de recherche "debounced"
+  const [debouncedSearch1, setDebouncedSearch1] = useState('');
+  const [debouncedSearch2, setDebouncedSearch2] = useState('');
+
+  // Effet pour débouncer search1
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch1(search1);
+    }, 300); // Délai de 300ms
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search1]); // Se déclenche quand search1 change
+
+  // Effet pour débouncer search2
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch2(search2);
+    }, 300); // Délai de 300ms
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search2]); // Se déclenche quand search2 change
 
   const p1 = useMemo(() => players.find(p => p.id === p1Id), [p1Id, players]);
   const p2 = useMemo(() => players.find(p => p.id === p2Id), [p2Id, players]);
 
-  const filtered1 = useMemo(() => {
-    if (!search1 || (p1 && search1 === p1.full_name)) return [];
-    return search1.length > 1 ? players.filter(p => p.full_name.toLowerCase().includes(search1.toLowerCase())).slice(0, 5) : [];
-  }, [search1, players, p1]);
+  const filtered1 = useMemo(() => { // Utilise debouncedSearch1
+    if (!debouncedSearch1 || (p1 && debouncedSearch1 === p1.full_name)) return [];
+    return debouncedSearch1.length > 1 ? players.filter(p => p.full_name.toLowerCase().includes(debouncedSearch1.toLowerCase())).slice(0, 5) : [];
+  }, [debouncedSearch1, players, p1]);
 
-  const filtered2 = useMemo(() => {
-    if (!search2 || (p2 && search2 === p2.full_name)) return [];
-    return search2.length > 1 ? players.filter(p => p.full_name.toLowerCase().includes(search2.toLowerCase())).slice(0, 5) : [];
-  }, [search2, players, p2]);
+  const filtered2 = useMemo(() => { // Utilise debouncedSearch2
+    if (!debouncedSearch2 || (p2 && debouncedSearch2 === p2.full_name)) return [];
+    return debouncedSearch2.length > 1 ? players.filter(p => p.full_name.toLowerCase().includes(debouncedSearch2.toLowerCase())).slice(0, 5) : [];
+  }, [debouncedSearch2, players, p2]);
 
   const h2h = useMemo(() => {
     if (!p1Id || !p2Id) return null;
@@ -34,32 +87,6 @@ export default function ComparePlayers({ players, allFinals }: { players: Player
       matches
     };
   }, [p1Id, p2Id, allFinals]);
-
-  const Selector = ({ search, setSearch, filtered, setPlayerId, label }: any) => (
-    <div className="relative group">
-      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3">{label}</p>
-      <input
-        type="text"
-        value={search}
-        onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
-        placeholder="Chercher un joueur..."
-        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:ring-2 focus:ring-emerald-500/50 outline-none transition-all placeholder:text-slate-700 font-bold uppercase italic text-sm"
-      />
-      {filtered.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-white/10 rounded-2xl overflow-hidden z-50 shadow-2xl">
-          {filtered.map((p: Player) => (
-            <button
-              key={p.id}
-              onClick={() => { setPlayerId(p.id); setSearch(p.full_name); }}
-              className="w-full px-6 py-4 text-left hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors border-b border-white/5 last:border-0 text-sm font-bold uppercase italic"
-            >
-              {p.full_name} <span className="text-[10px] text-slate-500 ml-2">({p.country})</span>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
 
   return (
     <div className="space-y-12">
