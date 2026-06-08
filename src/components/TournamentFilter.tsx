@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'preact/hooks';
+import { formatSurface } from '../api/data';
 
 interface Final {
   year: number;
@@ -14,6 +15,7 @@ interface Final {
 export default function TournamentFilter({ finals }: { finals: Final[] }) {
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedTournamentName, setSelectedTournamentName] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
 
   const years = useMemo(() => {
@@ -28,10 +30,15 @@ export default function TournamentFilter({ finals }: { finals: Final[] }) {
     const filtered = finals.filter(f => {
       const matchYear = selectedYear === '' || f.year.toString() === selectedYear;
       const matchTournament = selectedTournamentName === '' || f.tournament === selectedTournamentName;
-      return matchYear && matchTournament;
+      const matchesSearch = searchTerm === '' || 
+        f.winner_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        f.runner_up_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        f.tournament.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return matchYear && matchTournament && matchesSearch;
     });
     return [...filtered].sort((a, b) => sortOrder === 'desc' ? b.year - a.year : a.year - b.year);
-  }, [finals, selectedYear, selectedTournamentName, sortOrder]);
+  }, [finals, selectedYear, selectedTournamentName, searchTerm, sortOrder]);
 
   return (
     <div className="relative">
@@ -45,7 +52,17 @@ export default function TournamentFilter({ finals }: { finals: Final[] }) {
           </p>
         </div>
         
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="relative flex-1 min-w-[280px]">
+            <input
+              type="text"
+              placeholder="Joueur, tournoi..."
+              className="w-full bg-slate-900 border border-white/10 rounded-xl px-5 py-2 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all placeholder:text-slate-600"
+              value={searchTerm}
+              onInput={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
+            />
+          </div>
+
           <select 
             className="bg-slate-900 border border-white/10 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/50 cursor-pointer appearance-none transition-all hover:border-emerald-500/30 min-w-[170px]"
             value={selectedYear}
@@ -90,7 +107,7 @@ export default function TournamentFilter({ finals }: { finals: Final[] }) {
             </div>
             
             <h3 className="text-2xl font-bold mb-1 group-hover:text-emerald-400 transition-colors leading-tight">{f.tournament}</h3>
-            <p className="text-slate-500 text-[10px] mb-8 uppercase font-black tracking-widest">{f.surface}</p>
+            <p className="text-slate-500 text-[10px] mb-8 uppercase font-black tracking-widest">{formatSurface(f.surface)}</p>
             
             <div className="space-y-3">
               <div className="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">

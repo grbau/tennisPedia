@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'preact/hooks';
-import type { Player } from '../api/data';
+import { type Player, formatSurface } from '../api/data';
 import PlayerImage from './PlayerImage';
 
 // On sort le composant Selector ici pour qu'il soit stable et ne provoque pas de perte de focus
@@ -147,7 +147,7 @@ export default function ComparePlayers({ players, allMatches }: { players: Playe
                       <span className="text-xl font-black text-slate-700 italic">{m.year}</span>
                       <div>
                         <p className="font-bold text-slate-200 uppercase tracking-tight italic">{m.tournament} <span className="ml-2 text-emerald-500/50 text-xs">[{m.round}]</span></p>
-                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{m.surface} • {m.level}</p>
+                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{formatSurface(m.surface)} • {m.level}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-8">

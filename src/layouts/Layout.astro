@@ -11,6 +11,7 @@ const isHome = pathname === '/';
 const isTournaments = pathname.startsWith('/tournaments');
 const isPlayers = pathname.startsWith('/players');
 const isCompare = pathname.startsWith('/compare');
+const isQuiz = pathname.startsWith('/quiz');
 ---
 <!doctype html>
 <html lang="en">
@@ -53,6 +54,7 @@ const isCompare = pathname.startsWith('/compare');
 					<a href="/tournaments" class={`transition-colors hover:text-emerald-400 ${isTournaments ? 'text-emerald-400' : ''}`}>Tournois</a>
 					<a href="/compare" class={`transition-colors hover:text-emerald-400 ${isCompare ? 'text-emerald-400' : ''}`}>Face à Face</a>
 					<a href="/players" class={`transition-colors hover:text-emerald-400 ${isPlayers ? 'text-emerald-400' : ''}`}>Joueurs</a>
+					<a href="/quiz" class={`transition-colors hover:text-emerald-400 ${isQuiz ? 'text-emerald-400' : ''}`}>Quiz</a>
 				</div>
 
 				<!-- Bouton Burger Mobile -->
@@ -72,6 +74,7 @@ const isCompare = pathname.startsWith('/compare');
 				<a href="/tournaments" class={`block text-lg font-black uppercase italic tracking-wider hover:text-emerald-400 transition-colors ${isTournaments ? 'text-emerald-400' : 'text-slate-400'}`}>Tournois</a>
 				<a href="/compare" class={`block text-lg font-black uppercase italic tracking-wider hover:text-emerald-400 transition-colors ${isCompare ? 'text-emerald-400' : 'text-slate-400'}`}>Face à Face</a>
 				<a href="/players" class={`block text-lg font-black uppercase italic tracking-wider hover:text-emerald-400 transition-colors ${isPlayers ? 'text-emerald-400' : 'text-slate-400'}`}>Joueurs</a>
+				<a href="/quiz" class={`block text-lg font-black uppercase italic tracking-wider hover:text-emerald-400 transition-colors ${isQuiz ? 'text-emerald-400' : 'text-slate-400'}`}>Quiz</a>
 			</div>
 		</nav>
 

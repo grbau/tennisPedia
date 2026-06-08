@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'preact/hooks';
+import { formatSurface } from '../api/data';
 
 interface Title {
   year: number;
@@ -89,7 +90,7 @@ export default function PlayerTitles({ titles }: { titles: Title[] }) {
               </div>
             </div>
             <div className="flex items-center gap-4">
-               <span className="text-[9px] font-black px-2 py-0.5 rounded-full border border-white/10 text-slate-500 uppercase tracking-widest">{t.surface}</span>
+               <span className="text-[9px] font-black px-2 py-0.5 rounded-full border border-white/10 text-slate-500 uppercase tracking-widest">{formatSurface(t.surface)}</span>
                <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${t.level === 'Grand Chelem' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>{t.level}</span>
             </div>
           </div>

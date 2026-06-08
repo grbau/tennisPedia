@@ -21,6 +21,15 @@ export interface Player {
   wikidata_id: string | null;
 }
 
+export const SURFACE_MAP: Record<string, string> = {
+  'Hard': 'Dur',
+  'Clay': 'Terre Battue',
+  'Grass': 'Gazon',
+  'Carpet': 'Moquette'
+};
+
+export const formatSurface = (surface: string) => SURFACE_MAP[surface] || surface;
+
 const slugify = (text: string) => {
   return text
     .toLowerCase()
