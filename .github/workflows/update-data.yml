@@ -5,6 +5,9 @@ on:
     - cron: '0 4 * * 1' # Tous les lundis à 4h du matin
   workflow_dispatch: # Permet de lancer la mise à jour manuellement
 
+permissions:
+  contents: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
